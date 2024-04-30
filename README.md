@@ -10,7 +10,7 @@ The Latin texts data are originally taken from the [Perseus Digital Library](htt
 
 ## How to use
 
-The Latin N-gram Viewer application is currently hosted on [PythonAnywhere](https://www.pythonanywhere.com) and ready to use at the following web address: [Creative Commons Attribution-ShareAlike 3.0 US Licence](https://creativecommons.org/licenses/by-sa/3.0/us/).
+The Latin N-gram Viewer application is currently hosted on [PythonAnywhere](https://www.pythonanywhere.com) and ready to use at the following web address: [https://latinngramviewer.pythonanywhere.com/](https://latinngramviewer.pythonanywhere.com/).
 
 ## License
 
