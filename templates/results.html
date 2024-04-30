@@ -1,0 +1,409 @@
+<!--
+/**************
+The MIT License (MIT)
+
+Copyright (c) 2011-2018 Twitter, Inc.
+Copyright (c) 2011-2018 The Bootstrap Authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+**************/
+-->
+<!doctype html>
+<html lang="en" style="height: 100%;">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Search for n-grams within ancient Latin texts and visualize their absolute
+    and relative frequency">
+    <meta name="author" content="Silvia Pasciullo">
+
+    <title>Latin Ngram Viewer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.css')}}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{{ url_for('static', filename='css/dashboard.css')}}" rel="stylesheet">
+  </head>
+
+  <body style="display: flex; flex-direction: column; height: 100%;">
+    <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
+      <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ url_for('index') }}">Latin N-Gram Viewer</a>
+      <form class="form-inline my-2 my-lg-0" action="{{ url_for('search') }}" method="post" autocomplete="off">
+        <input class="form-control form-control-dark w-100" name="ngram-search" type="text" placeholder="Search"
+                 aria-label="Search" pattern="^(?!\s).*" title="Current input contains only whitespace characters" required>
+      </form>
+    </nav>
+
+    <div class="container-fluid" style="height: 100%;">
+      <div class="row" style="height: 100%;">
+
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+          <div class="sidebar-sticky">
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Frequency Type</span>
+              <a class="d-flex align-items-center text-muted" href="#">
+              </a>
+            </h6>
+            <ul class="nav flex-column mb-2">
+                <li class="nav-item">
+                <a id="chart1Button" class="nav-link" href="#">
+                  <span data-feather="bar-chart-2"></span>
+                  Absolute Frequency
+                </a>
+              </li>
+              <li class="nav-item">
+                <a id="chart2Button" class="nav-link" href="#">
+                  <span data-feather="bar-chart-2"></span>
+                  Relative Frequency
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" style="min-height:100%;">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h3 class="h3">Results</h3>
+          </div>
+
+          <div id="chartContainer" style="height: 300px; width: 100%; margin-bottom: 20px;"></div>
+          <!-- Test the JSON results
+          <div style="height: 20%; width: 100%;">Results frequency: {{ tables }}</div>-->
+          <!-- adjust bottom size; Removed height of table in order to adapt to the entire page height-->
+          <div id="test-table" class="table table-striped" style="width: 100%; padding-bottom: 5.875em"></div>
+
+          <div id="rig" style="font-size: x-small; text-align: justify; bottom: 6.375em; position: absolute; padding-right: 2.0625em; padding-left: 1.0625em;">The data used on this website is from the <a href="https://www.perseus.tufts.edu/hopper/" style="color: inherit;"><em>Perseus Digital Library</em></a>. It is subject, together with the content of the website, to the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" style="color: inherit;">Creative Commons Attribution-ShareAlike 3.0 US Licence</a>
+                <img src="././static/css/by-sa.svg" style="height: 17px; padding-right: 1.0625em;"></div>
+
+          <footer style="font-size: smaller; text-align: center; padding-top: 0.9375em; height: 4.875em; width: 94%; position: absolute;
+                 bottom: 0; border-top-width: 1px; border-top-style: solid; border-top-color: #dee2e6;">
+            <span id="copyright" style="float: left; margin-bottom: 0.9375em; padding-left: 1.0625em;">© 2024, Silvia Pasciullo</span>
+            <span id="app-info" style="float: right; margin-bottom: 0.9375em; padding-right: 3.0625em;"><a href="https://github.com" style="color: inherit;"><span data-feather="github"></span></a></span>
+          </footer>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <!--<script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="../../../../assets/js/vendor/popper.min.js"></script>
+    <script src="../static/dist/js/bootstrap.min.js"></script>-->
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <script>
+      feather.replace()
+    </script>
+
+    <!-- Graph -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script> -->
+    <script src="https://cdn.canvasjs.com/canvasjs.min.js"></script>
+
+    <script>
+       first = function () {
+
+            // Save the JSON objects into a const xxx
+            const old_j = {{ json|safe }};
+            console.log(old_j)
+
+
+
+            // New code: WORKSSSSSSS!
+            var tks = {}
+            old_j.forEach(tem => {
+              tem.forEach(d => {
+                if (!(d.ngram in tks)) tks[d.ngram] = []
+                tks[d.ngram].push({label: d.id, y: d.frequency})
+                })
+            })
+
+            //
+            var tks2 = {}
+            old_j.forEach(tem2 => {
+              tem2.forEach(t => {
+                if (!(t.ngram in tks2)) tks2[t.ngram] = []
+                tks2[t.ngram].push({label: t.id, y: t.frequencyRelative})
+                })
+            })
+
+            console.log(tks2)
+
+
+            // YESSSSSSSSS
+            var data_raw = Object.keys(tks).map(ngram => {
+              return {type: 'line',  name: ngram, dataPoints: tks[ngram],
+                        //xValueFormatString: "#0.## century", // not appearing!
+                        yValueFormatString: "#0.## occurrences",
+                        showInLegend: true}
+            })
+
+            var data_norm = Object.keys(tks2).map(ngram => {
+              return {type: 'line',  name: ngram, dataPoints: tks2[ngram],
+                        //xValueFormatString: "#0.## century", // not appearing!
+                        yValueFormatString: "#0.## occurrences",
+                        showInLegend: true}
+            })
+
+            console.log(data_raw)
+            console.log(data_norm)
+
+
+
+            //
+            const chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                exportEnabled: true,
+                axisX: {
+                    //valueFormatString: "YYY"
+                    //suffix: " Period"
+                },
+                axisY: {
+                    title: "Ngram Absolute Frequency",
+                    //suffix: " w"
+                },
+                legend: {
+                    cursor: "pointer",
+                    fontSize: 16,
+                    // The following function allows to click on the single ngram name in the legend, so to hide the correspondent data visualization
+                    itemclick: function (e) {
+                        e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
+                        chart.render();
+                    }
+                },
+                toolTip: {
+                    shared: true
+                },
+                data: data_raw
+            });
+
+            chart.render();
+
+
+         // Function to find the point with a specific x value
+          function findPointByX(seriesIndex, xValue) {
+            const series = data_raw[seriesIndex];
+            const dataPoints = series.dataPoints;
+
+            for (const point of dataPoints) {
+              if (point.x === xValue) {
+                return point;
+              }
+            }
+              // Return null if point with xValue is not found
+              return null;
+          }
+
+
+
+         //// WORKS!
+         // Add a click event handler to the chart
+        chart.options.data.forEach((series, seriesIndex) => {
+          series.dataPoints.forEach((dataPoint, dataPointIndex) => {
+
+            // For each data point, set up a `mouseover` event handler that
+            // sets the `cursor` property of each data point to "pointer" to change the cursor to a pointer when
+            // hovering over the data point.
+            dataPoint.mouseover = function(eppi){
+              // Change cursor to pointer on hover
+              dataPoint.cursor = "pointer";
+              }
+
+
+
+            dataPoint.click = function(e) {
+              // Find the data point with the clicked 'x' value
+              const clickedXValue = dataPoint.x;
+              const matchingPoint = findPointByX(seriesIndex, clickedXValue);
+
+                // Display table only if there are occurrences for a certain historical era
+                if (matchingPoint && (matchingPoint.x !== 0 && matchingPoint.y !== 0)
+                        || (matchingPoint.x !== 1 && matchingPoint.y !== 0)
+                        || (matchingPoint.x !== 2 && matchingPoint.y !== 0)
+                        || (matchingPoint.x !== 3 && matchingPoint.y !== 0)
+                        ) {
+                // Open a pop-up window with the information from the matching point
+                // You can customize the pop-up window content based on your requirements
+                // Display the result in an existing div element
+                // Click on 'dataPoint.label', get the table with matching 'Period' column value
+                // AND Results column contains 'series.name'
+
+                    // Define the values to search for in the specified columns
+                    let searchValue1 = dataPoint.label;
+                    let searchValue2 = series.name;
+
+                    //
+                    const tag_id = document.getElementById('test-table');
+                    tag_id.innerHTML = '{{ tables }}';
+
+
+                    const my_html = tag_id.textContent; // this is a string
+                    //console.log(my_html)
+                    // Delete unuseful string characters
+                    // Before converting the string to a JS array remove the opening "'[" and closing "]'" characters
+                    const newStr = my_html.slice(2); // remove the opening "'["
+                    const newStr2 = newStr.slice(0, newStr.length -2); // remove the closing "]'"
+                  
+                    // Convert string to JS array splitting the different tables
+                    const arr = newStr2.split(/', '/);
+
+
+
+                    //
+                    arr.forEach(item => {
+                          //console.log(item);
+                          // make a new parser
+                          const parser = new DOMParser();
+
+                          // convert html string into DOM
+                          const docum = parser.parseFromString(item, "text/html");
+                          const ht = docum.firstElementChild; //this is the new html table-document
+
+                          // Find all <tr> elements in the document
+                          const rows = ht.querySelectorAll('tr');
+
+                          // Set variable(?) 'found'
+                          let found = false;
+
+                      
+
+
+                          // Check if the search values are found in the specified columns of the row
+                          rows.forEach(row => {
+                            // If both search values are found in the specified columns of the row, set "found === true"
+                            if (row.innerHTML.includes(searchValue1) && row.innerHTML.includes(searchValue2)){
+                              found = true;
+                            }
+                          });
+
+                         // Display the correspondent entire table if match is found
+                            //const resultDiv = document.getElementById("test-table");
+                            if (found) {
+                              tag_id.innerHTML = item;
+                              }
+
+
+                        });
+
+                } else {
+                    const resultDivEmpty = document.getElementById("test-table");
+                    resultDivEmpty.innerHTML = null;
+                }
+            };
+          });
+        });
+
+
+
+        };
+
+
+
+       second = function() {
+
+            // Normalized dataset "extra2"
+            const old_j2 = {{ json|safe }};
+            console.log(old_j2)
+
+
+            var tks2 = {}
+            old_j2.forEach(tem2 => {
+              tem2.forEach(t => {
+                if (!(t.ngram in tks2)) tks2[t.ngram] = []
+                tks2[t.ngram].push({label: t.id, y: t.frequencyRelative})
+                })
+            })
+
+
+
+            // YESSSSSSSSS
+            var data_norm = Object.keys(tks2).map(ngram => {
+              return {type: 'line',  name: ngram, dataPoints: tks2[ngram],
+                        xValueFormatString: "#0.## century", // not appearing!
+                        yValueFormatString: "#0.##%",
+                        showInLegend: true}
+            })
+
+
+
+
+            const chart2 = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                exportEnabled: true,
+                axisX: {
+                    //valueFormatString: "YYY"
+                    //suffix: " Period"
+                },
+                axisY: {
+                    title: "Ngram Relative Frequency",
+                    //suffix: " w"
+                },
+                legend: {
+                    cursor: "pointer",
+                    fontSize: 16,
+                  // The following function allows to click on the single ngram name in the legend, so to hide the correspondent data visualization
+                    itemclick: function (e) {
+                        e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
+                        chart2.render();
+                    }
+                },
+                toolTip: {
+                    shared: true
+                },
+                data: data_norm
+              });
+
+            chart2.render();
+
+            };
+
+
+        // The chart "first" is the one loading up as results output
+        window.onload = first
+
+
+        // You have already created the charts with Chart.js and assigned them to the variables chart1 and chart2.
+        // Wait until the DOM is fully loaded.
+        document.addEventListener("DOMContentLoaded", function() {
+          // Button for chart 1
+          document.getElementById("chart1Button").addEventListener("click", first);
+          // Button for chart 2
+          document.getElementById("chart2Button").addEventListener("click", second);
+          });
+
+
+        /* Toggle between adding and removing the "responsive" class to the "topnav" element when the user clicks on the icon */
+        function responsiveNavbar() {
+          var x = document.getElementById("nav-navbar");
+          if (x.className === "nav-navbar") {
+            x.className += " responsive";
+          } else {
+            x.className = "nav-navbar";
+          }
+        }
+
+
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "latin-n-gram-viewer"
+version = "0.1.0"
+description = "A simple web application to search n-grams within a selected corpus of ancient Latin texts and visualize their frequency"
+authors = ["Silvia Pasciullo"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+flask = "^3.0.3"
+pandas = "^2.2.2"
+flask-bootstrap = "^3.3.7.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
