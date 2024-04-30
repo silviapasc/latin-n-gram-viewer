@@ -12,7 +12,7 @@ app = Flask(__name__, template_folder='templates')
 Bootstrap(app)
 
 # Import the data
-corpus = pd.read_csv('/home/iuser/DH/DH_2022_2023/Projekt/perseus-ngram/latin-corpus.csv', encoding='UTF-8')
+corpus = pd.read_csv('../latin-n-gram-viewer/latin-corpus.csv', encoding='UTF-8')
 
 # Make a copy of the "corpus" dataframe for future separate data manipulation
 summary = corpus
@@ -197,4 +197,4 @@ def search():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
