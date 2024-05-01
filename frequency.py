@@ -1,3 +1,8 @@
+################################################################################
+# The data underlying this script is taken from the Perseus Digital Library (https://www.perseus.tufts.edu/hopper/)
+# and published under the Creative Commons Attribution-ShareAlike 3.0 US Licence (https://creativecommons.org/licenses/by-sa/3.0/us/)
+################################################################################
+
 from flask import Flask, request, render_template
 from flask_bootstrap import Bootstrap
 import pandas as pd
