@@ -42,6 +42,19 @@ def search():
         # The results are collected by means of a list comprehension
         tokens = [t for t in input_string if t.strip()]
 
+        # Tokenizes a string text returning a list of tokens,
+        # using the 're' module to remove punctuation
+        def tokenize(text):
+            new_text = re.sub(r'[^\w\s]', '', text)
+            found_tokens = new_text.split()
+            return found_tokens
+
+        # Create a new column with the total number of tokens within each text of the corpus
+        corpus['Tokens_Count'] = corpus['Text'].apply(lambda x: len(tokenize(x)))
+
+        # Sum all the tokens occurring within the corpus
+        corpus_tokens = corpus['Tokens_Count'].sum()
+
         # Collect the raw occurrences within the texts for each ngram in the string input
         def item_counter(tokens_list):
             # Create an empty list
@@ -127,15 +140,21 @@ def search():
         def update_json_frequency(json_data):
             # Create an empty list
             output_json1 = []
-            # Compute 'total_frequency' by summing all absolute occurrences in the corpus for each n-gram
-            total_frequency = sum(obj['frequency'] for obj in json_data)
             # Extend each ngram JSON object with a new property 'frequencyRelative'
             for obj in json_data:
-                # The 'frequencyRelative' property is obtained by dividing the ngram absolute frequency
-                # by the 'total_frequency' value
+                # Determine the value of "n" for each searched n-gram, i.e. if n=1 for a unigram, n=2 for a bigram,
+                # and save it to the 'n_value' variable
+                n_value = len(tokenize(obj['ngram']))
+                # Determine the n-basis to compute the relative frequency on, so that, for example, if n=1,
+                # the ratio will be between the selected unigram and all the unigrams occurring within the corpus,
+                # if n=2, between the chosen bigram and all the bigrams occurring within the corpus
+                n_basis = corpus_tokens/n_value
+                # The 'frequencyRelative' property is obtained by dividing the n-gram absolute frequency
+                # by the 'n_basis', which represents the total number of n-grams from the collection,
+                # with "n" of 'n_basis' corresponding to "n" of the n-gram
                 # Prevent ZeroDivisionError setting the 'frequencyRelative' value to zero, if necessary
                 try:
-                    obj['frequencyRelative'] = obj['frequency'] / total_frequency
+                    obj['frequencyRelative'] = obj['frequency'] / n_basis
                 except ZeroDivisionError:
                     obj['frequencyRelative'] = 0
                 # Save each updated ngram JSON object into the "output_json1" list
@@ -184,8 +203,9 @@ def search():
                 new.append(distinct_df)
             return new
 
-        # Remove from the 'summary' dataframe the unuseful columns for visualization, i.e. 'Index' and 'Text'
-        ngram_df = summary.drop(summary.columns[[0, 3]], axis=1)
+        # Remove from the 'summary' dataframe the unuseful columns for visualization, i.e. 'Index', 'Text'
+        # and 'Tokens_Count'
+        ngram_df = summary.drop(summary.columns[[0, 3, 6]], axis=1)
 
         # Apply the 'create_df_subsets()' function
         subsets = create_df_subsets(ngram_df, ngram_raw_counts)
