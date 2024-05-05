@@ -28,6 +28,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ url_for('index') }}">Latin N-Gram Viewer</a>
       <form class="form-inline my-2 my-lg-0" action="{{ url_for('search') }}" method="post" autocomplete="off">
+        <!-- Set a regex pattern to exclude empty and whitespace characters from the search -->
         <input class="form-control form-control-dark w-100" name="ngram-search" type="text" placeholder="Search"
                  aria-label="Search" pattern="^(?!\s).*" title="Current input contains only whitespace characters" required>
       </form>
