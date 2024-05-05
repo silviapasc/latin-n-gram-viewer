@@ -66,9 +66,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
           </div>
 
           <div id="chartContainer" style="height: 300px; width: 100%; margin-bottom: 20px;"></div>
-          <!-- Test the JSON results
-          <div style="height: 20%; width: 100%;">Results frequency: {{ tables }}</div>-->
-          <!-- adjust bottom size; Removed height of table in order to adapt to the entire page height-->
+
           <div id="test-table" class="table table-striped" style="width: 100%; padding-bottom: 5.875em"></div>
 
           <div id="rig" style="font-size: x-small; text-align: justify; bottom: 6.375em; position: absolute; padding-right: 2.0625em; padding-left: 1.0625em;">The data used on this website is from the <a href="https://www.perseus.tufts.edu/hopper/" style="color: inherit;"><em>Perseus Digital Library</em></a> and together with other page content, unless otherwise stated, is subject to the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" style="color: inherit;">Creative Commons Attribution-ShareAlike 3.0 US Licence</a>
@@ -323,7 +321,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
             var data_norm = Object.keys(tks2).map(ngram => {
               return {type: 'line',  name: ngram, dataPoints: tks2[ngram],
                         xValueFormatString: "#0.## century", // not appearing!
-                        yValueFormatString: "#0.##%",
+                        yValueFormatString: "#0.##########%",
                         showInLegend: true}
             })
 
