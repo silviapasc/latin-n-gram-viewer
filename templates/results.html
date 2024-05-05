@@ -360,12 +360,12 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
             };
 
 
-        // The chart "first" is the one loading up as results output
+        /* Trigger the "loadFirstChart" function to display the absolute n-gram frequency diagram as default results output */
         window.onload = first
 
 
-        // You have already created the charts with Chart.js and assigned them to the variables chart1 and chart2.
-        // Wait until the DOM is fully loaded.
+        /* By means of the addEventListener() method attach a click event to each of the two buttons "chart1Button"
+        and "chart2Button" in the left-hand navigation bar, so to display the absolute and the relative chart respectively*/
         document.addEventListener("DOMContentLoaded", function() {
           // Button for chart 1
           document.getElementById("chart1Button").addEventListener("click", first);
