@@ -68,7 +68,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
 
           <div id="chartContainer" style="height: 300px; width: 100%; margin-bottom: 20px;"></div>
 
-          <div id="test-table" class="table table-striped" style="width: 100%; padding-bottom: 5.875em"></div>
+          <div id="results-table" class="table table-striped" style="width: 100%; padding-bottom: 5.875em"></div>
 
           <div id="rig" style="font-size: x-small; text-align: justify; bottom: 6.375em; position: absolute; padding-right: 2.0625em; padding-left: 1.0625em;">The data used on this website is from the <a href="https://www.perseus.tufts.edu/hopper/" style="color: inherit;"><em>Perseus Digital Library</em></a> and together with other page content, unless otherwise stated, is subject to the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" style="color: inherit;">Creative Commons Attribution-ShareAlike 3.0 US Licence</a>
                 <img src="././static/css/by-sa.svg" style="height: 17px; padding-right: 1.0625em;"></div>
@@ -103,192 +103,182 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
         // Author: Silvia Pasciullo
         // License: CC BY-SA 3.0 US
 
-       first = function () {
+       /* Define a function to display the absolute n-gram frequencies chart */
+        loadFirstChart = function () {
 
-            // Save the JSON objects into a const xxx
-            const old_j = {{ json|safe }};
-            console.log(old_j)
+            /* Import the JSON data and save it into the "json_data" variable */
+            const json_data = {{ json|safe }};
 
-
-
-            // New code: WORKSSSSSSS!
+            /* Initialize an object "tks" where the properties for each JSON object (i.e. n-gram) from the data
+            *  are grouped by historical epoch and collected into an array */
             var tks = {}
-            old_j.forEach(tem => {
-              tem.forEach(d => {
-                if (!(d.ngram in tks)) tks[d.ngram] = []
-                tks[d.ngram].push({label: d.id, y: d.frequency})
+            json_data.forEach(item => {
+              item.forEach(i => {
+                if (!(i.ngram in tks))
+                    tks[i.ngram] = []
+                    tks[i.ngram].push({label: i.id, y: i.frequency})
                 })
             })
 
-            //
-            var tks2 = {}
-            old_j.forEach(tem2 => {
-              tem2.forEach(t => {
-                if (!(t.ngram in tks2)) tks2[t.ngram] = []
-                tks2[t.ngram].push({label: t.id, y: t.frequencyRelative})
-                })
-            })
 
-            console.log(tks2)
-
-
-            // YESSSSSSSSS
-            var data_raw = Object.keys(tks).map(ngram => {
-              return {type: 'line',  name: ngram, dataPoints: tks[ngram],
-                        //xValueFormatString: "#0.## century", // not appearing!
-                        yValueFormatString: "#0.## occurrences",
-                        showInLegend: true}
-            })
-
-            var data_norm = Object.keys(tks2).map(ngram => {
-              return {type: 'line',  name: ngram, dataPoints: tks2[ngram],
-                        //xValueFormatString: "#0.## century", // not appearing!
-                        yValueFormatString: "#0.## occurrences",
-                        showInLegend: true}
-            })
-
-            console.log(data_raw)
-            console.log(data_norm)
+            /* Define an array containing all the n-grams searched within a session and to be displayed
+               on the CanvasJS chart. Within the array, each n-gram is represented as an object encapsulating all
+               its properties */
+            var data_raw_freq = Object.keys(tks).map(ngram => {
+              return {type: 'line',
+                      name: ngram,
+                      dataPoints: tks[ngram],
+                      yValueFormatString: "#0.## occurrences",
+                      showInLegend: true}
+              })
 
 
-
-            //
-            const chart = new CanvasJS.Chart("chartContainer", {
+            /* CanvasJS configuration for the absolute n-gram frequencies chart */
+            const absolute_freq_chart = new CanvasJS.Chart("chartContainer", {
                 animationEnabled: true,
                 exportEnabled: true,
-                axisX: {
-                    //valueFormatString: "YYY"
-                    //suffix: " Period"
-                },
                 axisY: {
-                    title: "Ngram Absolute Frequency",
-                    //suffix: " w"
+                    title: "N-Gram Absolute Frequency"
                 },
                 legend: {
                     cursor: "pointer",
                     fontSize: 16,
-                    // The following function allows to click on the single ngram name in the legend, so to hide the correspondent data visualization
+                    /* The following function allows to click on each single n-gram name in the legend, so to hide the correspondent data visualization */
                     itemclick: function (e) {
                         e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
-                        chart.render();
+                        absolute_freq_chart.render();
                     }
                 },
                 toolTip: {
                     shared: true
                 },
-                data: data_raw
+                data: data_raw_freq
             });
 
-            chart.render();
+            absolute_freq_chart.render();
 
 
-         // Function to find the point with a specific x value
+
+         /* Set the function "findPointByX()" to to find a datapoint, based on its "x" value or property.
+            The datapoint is found, thus returned, if its x-value matches with the "xValue" parameter passed to the function.
+            Otherwise, nothing is returned */
+
           function findPointByX(seriesIndex, xValue) {
-            const series = data_raw[seriesIndex];
+            // The variable "series" is intended as an n-gram object, at index "seriesIndex" and with all related data and chart settings
+            const series = data_raw_freq[seriesIndex];
+
+            // The variable "dataPoints" represents the array with the n-gram object data for each historical epoch.
             const dataPoints = series.dataPoints;
 
             for (const point of dataPoints) {
+              // "point" corresponds to a single object (with properties "label", "x", "y", "mouseover", "click") within
+              // the "dataPoints" array.
+              // The x-property of "point", that has to be compared with "xValue", represents the historical epoch index
+              // and in that sense can be a value between 0 and 3. Four are, in fact, the given epochs from the dataframe
               if (point.x === xValue) {
                 return point;
               }
             }
-              // Return null if point with xValue is not found
               return null;
           }
 
 
-
-         //// WORKS!
-         // Add a click event handler to the chart
-        chart.options.data.forEach((series, seriesIndex) => {
+         /* For each datapoint on the chart, set a click event handler to launch the table containing
+            the absolute n-gram frequencies related to each text.
+            If the absolute n-gram frequency is overall equal to zero, no table is displayed */
+         absolute_freq_chart.options.data.forEach((series, seriesIndex) => {
           series.dataPoints.forEach((dataPoint, dataPointIndex) => {
 
-            // For each data point, set up a `mouseover` event handler that
-            // sets the `cursor` property of each data point to "pointer" to change the cursor to a pointer when
-            // hovering over the data point.
-            dataPoint.mouseover = function(eppi){
-              // Change cursor to pointer on hover
-              dataPoint.cursor = "pointer";
+            /* For each datapoint, set up a "mouseover" event handler that changes the "cursor" property
+            to "pointer" when hovering over the datapoint itself. This will mean that a function related to the datapoint
+            can be triggered */
+            dataPoint.mouseover = function(setPointer){
+                dataPoint.cursor = "pointer";
               }
 
 
+            /* Set the function that is triggered when clicking on a datapoint, and that possibly displays
+            * the table with the absolute n-gram frequencies in each text source */
 
             dataPoint.click = function(e) {
-              // Find the data point with the clicked 'x' value
+              // Bind the x-property, i.e. value, of each datapoint to the variable "clickedXValue"
               const clickedXValue = dataPoint.x;
+              // Apply the "findPointByX()" function
               const matchingPoint = findPointByX(seriesIndex, clickedXValue);
 
-                // Display table only if there are occurrences for a certain historical era
+
+                // Set a constraint, so to display the results table if there is at least one n-gram absolute frequency
+                // for a certain historical epoch. In other words, no table is displayed when the "y" value is zero
                 if (matchingPoint && (matchingPoint.x !== 0 && matchingPoint.y !== 0)
                         || (matchingPoint.x !== 1 && matchingPoint.y !== 0)
                         || (matchingPoint.x !== 2 && matchingPoint.y !== 0)
                         || (matchingPoint.x !== 3 && matchingPoint.y !== 0)
                         ) {
-                // Open a pop-up window with the information from the matching point
-                // You can customize the pop-up window content based on your requirements
-                // Display the result in an existing div element
-                // Click on 'dataPoint.label', get the table with matching 'Period' column value
-                // AND Results column contains 'series.name'
-
-                    // Define the values to search for in the specified columns
-                    let searchValue1 = dataPoint.label;
-                    let searchValue2 = series.name;
-
-                    //
-                    const tag_id = document.getElementById('test-table');
-                    tag_id.innerHTML = '{{ tables }}';
 
 
-                    const my_html = tag_id.textContent; // this is a string
-                    //console.log(my_html)
-                    // Delete unuseful string characters
-                    // Before converting the string to a JS array remove the opening "'[" and closing "]'" characters
-                    const newStr = my_html.slice(2); // remove the opening "'["
-                    const newStr2 = newStr.slice(0, newStr.length -2); // remove the closing "]'"
+                    /* Define the parameters to be searched within the dataframe and save them into
+                    variables */
+                    let searchedValue1 = dataPoint.label; // 'Period' denomination, e.g. "3. Middle Republic (280-130 BC)"
+                    let searchedValue2 = series.name; // n-gram denomination
+
+                    // Get the "results-table" div-element from the HTML document and save it to "tagId"
+                    const tagId = document.getElementById('results-table');
+
+                    // Assign the n-gram absolute frequency subdataframes "tables" to "tagId" as "innerHTML" property
+                    tagId.innerHTML = '{{ tables }}';
+
+                    // Save the "tagId" content as one line string into "htmlTableString"
+                    const htmlTableString = tagId.textContent;
+
+                    /* Before converting the "htmlTableString" string into a JavaScript array, remove unuseful string characters
+                       such as the opening "'[" and closing "]'" characters */
+                    const updatedHtmlStr = htmlTableString.slice(2); // remove the opening "'["
+                    const updatedHtmlStr2 = updatedHtmlStr.slice(0, updatedHtmlStr.length -2); // remove the closing "]'"
                   
-                    // Convert string to JS array splitting the different tables
-                    const arr = newStr2.split(/', '/);
+                    /* Convert "updatedHtmlStr2" to a JavaScript array, so to split the different tables contained in it
+                       at splitting point ", " */
+                    const arr = updatedHtmlStr2.split(/', '/);
 
 
+                    /* Iterate over each HTML table within the "arr" array to properly convert the tables
+                    * from string to HTML format. Then access the HTML document as needed */
+                    arr.forEach(tableItem => {
 
-                    //
-                    arr.forEach(item => {
-                          //console.log(item);
-                          // make a new parser
+                          // Create a new DOM parser
                           const parser = new DOMParser();
 
-                          // convert html string into DOM
-                          const docum = parser.parseFromString(item, "text/html");
-                          const ht = docum.firstElementChild; //this is the new html table-document
+                          // Convert the HTML tables as string into DOM content
+                          const htmlDoc = parser.parseFromString(tableItem, "text/html");
 
-                          // Find all <tr> elements in the document
-                          const rows = ht.querySelectorAll('tr');
+                          // Extract the HTML table to be displayed for each datapoint
+                          const htmlFrequencyTable = htmlDoc.firstElementChild;
 
-                          // Set variable(?) 'found'
+                          // Define all the table row tags in the document
+                          const rows = htmlFrequencyTable.querySelectorAll('tr');
+
+
+                          // Set variable 'found' to 'false' as starting condition for next for-loop
                           let found = false;
 
-                      
-
-
-                          // Check if the search values are found in the specified columns of the row
+                          /* Iterate over each single row of the table and check if both of the searched values
+                             "searchedValue1" (Epoch denomination) and "searchedValue2" (n-gram denomination) are found
+                             within the relative columns. If this is the case, change the "found" value to "true"
+                          */
                           rows.forEach(row => {
-                            // If both search values are found in the specified columns of the row, set "found === true"
-                            if (row.innerHTML.includes(searchValue1) && row.innerHTML.includes(searchValue2)){
+                            if (row.innerHTML.includes(searchedValue1) && row.innerHTML.includes(searchedValue2)){
                               found = true;
                             }
                           });
 
-                         // Display the correspondent entire table if match is found
-                            //const resultDiv = document.getElementById("test-table");
+                         // Display the whole absolute frequency table for the given datapoint, if a match is found
                             if (found) {
-                              tag_id.innerHTML = item;
+                              tagId.innerHTML = tableItem;
                               }
-
-
                         });
 
                 } else {
-                    const resultDivEmpty = document.getElementById("test-table");
+                    // Return an empty "results-table" div, if no match is found
+                    const resultDivEmpty = document.getElementById("results-table");
                     resultDivEmpty.innerHTML = null;
                 }
             };
@@ -300,50 +290,49 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
         };
 
 
+       /* Define a function to display the relative n-gram frequencies chart */
+       loadSecondChart = function() {
 
-       second = function() {
-
-            // Normalized dataset "extra2"
-            const old_j2 = {{ json|safe }};
-            console.log(old_j2)
+            /* Import the JSON data and save it into the "json_data2" variable */
+            const json_data2 = {{ json|safe }};
 
 
+            /* Initialize an object "tks2" where the properties for each JSON object (i.e. n-gram) from the data
+            *  are grouped by historical epoch and collected into an array */
             var tks2 = {}
-            old_j2.forEach(tem2 => {
-              tem2.forEach(t => {
-                if (!(t.ngram in tks2)) tks2[t.ngram] = []
-                tks2[t.ngram].push({label: t.id, y: t.frequencyRelative})
+            json_data2.forEach(item2 => {
+              item2.forEach(t => {
+                if (!(t.ngram in tks2))
+                    tks2[t.ngram] = []
+                    tks2[t.ngram].push({label: t.id, y: t.frequencyRelative})
                 })
             })
 
 
 
-            // YESSSSSSSSS
-            var data_norm = Object.keys(tks2).map(ngram => {
-              return {type: 'line',  name: ngram, dataPoints: tks2[ngram],
-                        xValueFormatString: "#0.## century", // not appearing!
-                        yValueFormatString: "#0.##########%",
-                        showInLegend: true}
+            /* Define an array containing all the n-grams searched within a session and to be displayed
+               on the CanvasJS chart. Within the array, each n-gram is represented as an object encapsulating all
+               its properties */
+            var data_rel_freq = Object.keys(tks2).map(ngram => {
+              return {type: 'line',
+                      name: ngram,
+                      dataPoints: tks2[ngram],
+                      yValueFormatString: "#0.##########%",
+                      showInLegend: true}
             })
 
 
-
-
+             /* CanvasJS configuration for the relative n-gram frequencies chart */
             const chart2 = new CanvasJS.Chart("chartContainer", {
                 animationEnabled: true,
                 exportEnabled: true,
-                axisX: {
-                    //valueFormatString: "YYY"
-                    //suffix: " Period"
-                },
                 axisY: {
-                    title: "Ngram Relative Frequency",
-                    //suffix: " w"
+                    title: "N-Gram Relative Frequency"
                 },
                 legend: {
                     cursor: "pointer",
                     fontSize: 16,
-                  // The following function allows to click on the single ngram name in the legend, so to hide the correspondent data visualization
+                  /* The following function allows to click on each n-gram name in the legend, so to hide the correspondent data visualization */
                     itemclick: function (e) {
                         e.dataSeries.visible = !(typeof (e.dataSeries.visible) === "undefined" || e.dataSeries.visible);
                         chart2.render();
@@ -352,7 +341,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
                 toolTip: {
                     shared: true
                 },
-                data: data_norm
+                data: data_rel_freq
               });
 
             chart2.render();
@@ -360,17 +349,17 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
             };
 
 
-        /* Trigger the "loadFirstChart" function to display the absolute n-gram frequency diagram as default results output */
-        window.onload = first
+        /* Trigger the "loadFirstChart" function to display the absolute n-gram frequencies diagram as default results output */
+        window.onload = loadFirstChart
 
 
         /* By means of the addEventListener() method attach a click event to each of the two buttons "chart1Button"
         and "chart2Button" in the left-hand navigation bar, so to display the absolute and the relative chart respectively*/
         document.addEventListener("DOMContentLoaded", function() {
           // Button for chart 1
-          document.getElementById("chart1Button").addEventListener("click", first);
+          document.getElementById("chart1Button").addEventListener("click", loadFirstChart);
           // Button for chart 2
-          document.getElementById("chart2Button").addEventListener("click", second);
+          document.getElementById("chart2Button").addEventListener("click", loadSecondChart);
           });
 
 
