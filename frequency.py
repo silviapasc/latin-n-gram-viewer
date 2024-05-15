@@ -136,7 +136,7 @@ def search():
         # Update all ngram JSON dictionaries and save them into a list comprehension
         updated_json_dictionaries = [update_json(dictionary) for dictionary in load_json]
 
-        # Sum all values of the "frequency" property and divide each "frequency" property by this total
+        # Compute and add to the JSON dictionary a relative frequency value for each searched n-gram
         def update_json_frequency(json_data):
             # Create an empty list
             output_json1 = []
