@@ -39,8 +39,9 @@ def search():
         # Remove empty strings and whitespaces from the tokens list, in order not to search them in the next step.
         # The strip() function removes leading and trailing whitespace characters (spaces, tabs, and newlines) from a
         # string. It returns a new string with the whitespace characters removed.
+        # The new string text is also converted to lowercase to facilitate comparison with the lowercased text dataset
         # The results are collected by means of a list comprehension
-        tokens = [t for t in input_string if t.strip()]
+        tokens = [t.lower() for t in input_string if t.strip()]
 
         # Tokenizes a string text returning a list of tokens,
         # using the 're' module to remove punctuation
