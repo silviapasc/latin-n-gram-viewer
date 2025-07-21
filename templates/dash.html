@@ -7,7 +7,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
 **************/
 -->
 <!doctype html>
-<html lang="en" style="height: 100%;">
+<html lang="en" style="min-height: 100%;">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,7 +24,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
     <link href="{{ url_for('static', filename='css/dashboard.css')}}" rel="stylesheet">
   </head>
 
-  <body style="display: flex; flex-direction: column; height: 100%;">
+  <body style="display: flex; flex-direction: column; height: 100vh;">
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ url_for('index') }}">Latin N-Gram Viewer</a>
       <form class="form-inline my-2 my-lg-0" action="{{ url_for('search') }}" method="post" autocomplete="off">
@@ -47,9 +47,9 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
           </div>
 
           <div style="width: 100%; padding-bottom: 5.875em;">
-            <p style="text-align: justify;"><em>Latin N-Gram Viewer</em> is a simple tool to <b>search n-grams</b> within a selected corpus of <b>ancient Latin texts</b> and <b>visualize their frequency</b></p>
-            <p style="text-align: justify;">All you need to do is type a text string into the search bar in the top right-hand corner</p>
-            <p style="text-align: justify;">For <b>multiple searching</b> use a comma to separate the n-grams</p>
+            <p style="text-align: justify;"><em>Latin N-Gram Viewer</em> is a simple tool to <b>search n-grams</b> within a selected corpus of <b>ancient Latin texts</b> and <b>visualize their frequency</b>.</p>
+            <p style="text-align: justify;">All you need to do is type a text string into the <b>search bar</b> located in the header of the webpage. A case-insensitive search will be performed on the dataset, which is all in lowercase, ensuring you get results for lowercased tokens.</p>
+            <p style="text-align: justify;">For <b>multiple searching</b> use a comma to separate the n-grams.</p>
           </div>
 
           <div id="rig" style="font-size: x-small; text-align: justify; bottom: 6.375em; position: absolute; padding-right: 2.0625em; padding-left: 1.0625em;">The data used on this website is from the <a href="https://www.perseus.tufts.edu/hopper/" style="color: inherit;"><em>Perseus Digital Library</em></a> and together with other page content, unless otherwise stated, is subject to the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" style="color: inherit;">Creative Commons Attribution-ShareAlike 3.0 US Licence</a>
