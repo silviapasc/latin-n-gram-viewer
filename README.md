@@ -6,7 +6,7 @@ Using a simple and intuitive user interface, the chosen n-grams can be typed as 
 
 The application also allows the **search of multiple n-grams in parallel** and then the simultaneous comparison of the results. Furthermore, in the case of an absolute frequency of the n-gram other than zero, a table is associated with each individual historical epoch in the corpus, providing the number of occurrences of the same n-gram by text source.
 
-The Latin texts data are originally taken from the [Perseus Digital Library](https://www.perseus.tufts.edu/hopper/) online project.
+The Latin texts and their associated metadata were collected from the [Perseus Digital Library](https://www.perseus.tufts.edu/hopper/) online project.
 
 ## How to use
 
