@@ -7,7 +7,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
 **************/
 -->
 <!doctype html>
-<html lang="en" style="height: 100%;">
+<html lang="en" style="min-height: 100%;">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -24,7 +24,7 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
     <link href="{{ url_for('static', filename='css/dashboard.css')}}" rel="stylesheet">
   </head>
 
-  <body style="display: flex; flex-direction: column; height: 100%;">
+  <body style="display: flex; flex-direction: column; height: 100vh;">
     <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0">
       <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="{{ url_for('index') }}">Latin N-Gram Viewer</a>
       <form class="form-inline my-2 my-lg-0" action="{{ url_for('search') }}" method="post" autocomplete="off">
@@ -34,8 +34,8 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
       </form>
     </nav>
 
-    <div class="container-fluid" style="height: 100%;">
-      <div class="row" style="height: 100%;">
+    <div class="container-fluid" style="min-height: 100%; flex: 1; overflow: auto;">
+      <div class="row" style="min-height: 100%;">
 
         <nav class="col-md-2 d-none d-md-block bg-light sidebar">
           <div class="sidebar-sticky">
@@ -68,9 +68,9 @@ This section of code uses a Bootstrap v4.0.0 (https://getbootstrap.com) script
 
           <div id="chartContainer" style="height: 300px; width: 100%; margin-bottom: 20px;"></div>
 
-          <div id="results-table" class="table table-striped" style="width: 100%; padding-bottom: 5.875em"></div>
+          <div id="results-table" class="table table-striped" style="width: 100%; overflow: auto;"></div>
 
-          <div id="rig" style="font-size: x-small; text-align: justify; bottom: 6.375em; position: absolute; padding-right: 2.0625em; padding-left: 1.0625em;">The data used on this website is from the <a href="https://www.perseus.tufts.edu/hopper/" style="color: inherit;"><em>Perseus Digital Library</em></a> and together with other page content, unless otherwise stated, is subject to the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" style="color: inherit;">Creative Commons Attribution-ShareAlike 3.0 US Licence</a>
+          <div id="rig" style="font-size: x-small; text-align: justify; bottom: 6.375em; position: absolute; padding-top: 5.875em; padding-right: 2.0625em; padding-left: 1.0625em;">The data used on this website is from the <a href="https://www.perseus.tufts.edu/hopper/" style="color: inherit;"><em>Perseus Digital Library</em></a> and together with other page content, unless otherwise stated, is subject to the <a href="https://creativecommons.org/licenses/by-sa/3.0/us/" style="color: inherit;">Creative Commons Attribution-ShareAlike 3.0 US Licence</a>
                 <img src="././static/css/by-sa.svg" style="height: 17px; padding-right: 1.0625em;"></div>
 
           <footer style="font-size: smaller; text-align: center; padding-top: 0.9375em; height: 4.875em; width: 94%; position: absolute;
